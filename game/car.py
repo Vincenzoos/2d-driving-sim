@@ -26,7 +26,7 @@ class Car:
         self.vel = min(self.vel + self.acceleration, self.max_vel)
         self.move()
 
-    def move_backword(self):
+    def move_backward(self):
         # Never exceeds max vel
         self.vel = max(self.vel - self.acceleration, -self.max_vel/2)
         self.move()
@@ -49,5 +49,22 @@ class Car:
         if self.vel < 0:
             self.vel += self.friction
         self.move()
+    
+    def update_car_movement(self):
+        moved = False
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            self.rotate(left=True)
+        if keys[pygame.K_d]:
+            self.rotate(right=True)
+        if keys[pygame.K_w]:
+            moved = True
+            self.move_foward()
+        if keys[pygame.K_s]:
+            moved = True
+            self.move_backward()
+
+        if not moved:
+            self.decceleration()
 
         

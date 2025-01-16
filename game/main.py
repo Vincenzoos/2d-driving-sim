@@ -35,7 +35,6 @@ def draw_objects(window: pygame.Surface, objects, car: car.Car):
     pygame.display.update()
 
 
-
 while run:
     # Limit clock to 60 fps, ensure all machine run the game on the same speed
     clock.tick(FPS)
@@ -49,20 +48,9 @@ while run:
             break
 
     # key pressed
-    moved = False
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        player_car.rotate(left=True)
-    if keys[pygame.K_d]:
-        player_car.rotate(right=True)
-    if keys[pygame.K_w]:
-        moved = True
-        player_car.move_foward()
-    if keys[pygame.K_s]:
-        moved = True
-        player_car.move_backword()
+    player_car.update_car_movement()
 
-    if not moved:
-        player_car.decceleration()
+
+
 # Game termination
 pygame.quit()
