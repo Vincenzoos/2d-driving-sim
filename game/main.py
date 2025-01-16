@@ -1,13 +1,20 @@
 import pygame
-import time
-import math
 from utils import scale_img
 import car
 
+
+pygame.init()
+
+# Get information about the display
+info = pygame.display.Info()
+screen_width = info.current_w
+screen_height = info.current_h
+
 # Game Assets loading
 GRASS = scale_img(pygame.image.load("imgs/grass.jpg"), 2.5)
-TRACK = scale_img(pygame.image.load("imgs/track.png"), 0.8)
-TRACK_BORDER = scale_img(pygame.image.load("imgs/track-border.png"), 0.8)
+TRACK = scale_img(pygame.image.load("imgs/track.png"), 0.75)
+TRACK_BORDER = scale_img(pygame.image.load("imgs/track-border.png"), 0.75)
+TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 FINISH_LINE = pygame.image.load("imgs/finish.png")
 RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.55)
 GREEN_CAR = pygame.image.load("imgs/green-car.png")
@@ -22,7 +29,7 @@ pygame.display.set_caption("Driving Sim")
 FPS = 60
 clock = pygame.time.Clock()
 game_objects = [(GRASS, (0,0)), (TRACK, (0,0)), (TRACK_BORDER, (0,0))]
-player_car = car.Car(RED_CAR, 5, 5, 170, 200)
+player_car = car.Car(RED_CAR, 5, 5, 150, 200)
 
 # Game loop
 run = True
@@ -50,6 +57,9 @@ while run:
     # key pressed
     player_car.update_car_movement()
 
+    # check for collision
+    if player_car.collide(TRACK_BORDER_MASK) != None:
+        print("Collision detected")
 
 
 # Game termination

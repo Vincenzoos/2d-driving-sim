@@ -67,4 +67,8 @@ class Car:
         if not moved:
             self.decceleration()
 
-        
+    def collide(self, mask: pygame.Mask, x=0, y=0):
+        car_mask = pygame.mask.from_surface(self.img)
+        offset = (int(self.x - x), int(self.y - y))
+        intersection_point = mask.overlap(car_mask, offset)
+        return intersection_point
