@@ -66,9 +66,14 @@ class Car:
 
         if not moved:
             self.decceleration()
+    
+    def bounce(self):
+        self.vel = - self.vel/1.5
+        self.move()
 
-    def collide(self, mask: pygame.Mask, x=0, y=0):
+    def check_collision(self, mask: pygame.Mask, x=0, y=0):
         car_mask = pygame.mask.from_surface(self.img)
         offset = (int(self.x - x), int(self.y - y))
         intersection_point = mask.overlap(car_mask, offset)
-        return intersection_point
+        if intersection_point != None:
+            self.bounce()

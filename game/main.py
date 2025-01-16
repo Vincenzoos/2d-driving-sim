@@ -58,8 +58,7 @@ while run:
     player_car.update_car_movement()
 
     # check for collision
-    if player_car.collide(TRACK_BORDER_MASK) != None:
-        print("Collision detected")
+    player_car.check_collision(TRACK_BORDER_MASK)
 
 
 # Game termination
