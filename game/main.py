@@ -15,7 +15,9 @@ GRASS = scale_img(pygame.image.load("imgs/grass.jpg"), 2.5)
 TRACK = scale_img(pygame.image.load("imgs/track.png"), 0.75)
 TRACK_BORDER = scale_img(pygame.image.load("imgs/track-border.png"), 0.75)
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
-FINISH_LINE = pygame.image.load("imgs/finish.png")
+FINISH_LINE = scale_img(pygame.image.load("imgs/finish.png"),0.8)
+FINISH_LINE_POSITION = (110, 200)
+FINISH_LINE_MASK = pygame.mask.from_surface(FINISH_LINE)
 RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.55)
 GREEN_CAR = pygame.image.load("imgs/green-car.png")
 
@@ -28,8 +30,8 @@ pygame.display.set_caption("Driving Sim")
 # Game config
 FPS = 60
 clock = pygame.time.Clock()
-game_objects = [(GRASS, (0,0)), (TRACK, (0,0)), (TRACK_BORDER, (0,0))]
-player_car = car.Car(RED_CAR, 5, 5, 150, 200)
+game_objects = [(GRASS, (0,0)), (TRACK, (0,0)), (FINISH_LINE, FINISH_LINE_POSITION), (TRACK_BORDER, (0,0))]
+player_car = car.Car(RED_CAR, 5, 5, 150, 250)
 
 # Game loop
 run = True
@@ -58,7 +60,16 @@ while run:
     player_car.update_car_movement()
 
     # check for collision
-    player_car.check_collision(TRACK_BORDER_MASK)
+    if player_car.collide(TRACK_BORDER_MASK):
+        player_car.bounce()
+    
+    finish_line_poi = player_car.collide(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
+    if finish_line_poi:
+        if finish_line_poi[1] == 0:
+            player_car.bounce()
+        else:
+            print("You win!")
+            player_car.reset_position()
 
 
 # Game termination
