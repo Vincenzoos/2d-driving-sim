@@ -57,7 +57,7 @@ while run:
             break
 
     # key pressed
-    player_car.update_car_movement()
+    player_car.update_car_movement()    
 
     # check for collision
     if player_car.collide(TRACK_BORDER_MASK):
@@ -71,6 +71,10 @@ while run:
             print("You win!")
             player_car.reset_position()
 
+    # draw radar
+    player_car.draw_radar(WINDOW, TRACK_BORDER_MASK)
+
+    pygame.display.update()
 
 # Game termination
 pygame.quit()

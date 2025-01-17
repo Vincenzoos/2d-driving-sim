@@ -31,6 +31,11 @@ class Car:
         self.vel = max(self.vel - self.acceleration, -self.max_vel/2)
         self.move()
     
+    def get_center_position(self):
+        center_x = self.x + self.img.get_width() / 2
+        center_y = self.y + self.img.get_height() / 2
+        return center_x, center_y
+    
     def move(self):
         # Note that the unit circle was rotated 90 deg since the car at angle 0 is [^]
         angle_rad = math.radians(self.angle)
@@ -66,7 +71,7 @@ class Car:
 
         if not moved:
             self.decceleration()
-    
+        
     def bounce(self):
         self.vel = - self.vel/1.5
         self.move()
@@ -82,3 +87,18 @@ class Car:
         self.y = 150
         self.vel = 0
         self.angle = 0
+
+    def draw_radar(self, window: pygame.Surface, mask: pygame.Mask):
+        radar_angle = 90
+        max_length = 200
+        length = 0
+        center_x, center_y = self.get_center_position()
+        radar_x = int(center_x)
+        radar_y = int(center_y)
+        while mask.get_at((radar_x, radar_y)) ==0 and length < max_length:
+            length += 1
+            radar_x = center_x + length * math.cos(math.radians(self.angle + radar_angle))
+            radar_y = center_y - length * math.sin(math.radians(self.angle + radar_angle))
+        
+        pygame.draw.line(window, (255, 255, 255), (center_x, center_y), (radar_x, radar_y), 1)
+        pygame.draw.circle(window, (0,255,0), (radar_x, radar_y), 3)
