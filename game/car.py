@@ -14,6 +14,8 @@ class Car:
         self.y = y
         self.acceleration = 0.1
         self.friction = 0.1
+        self.ray_angles = [-135, -45, 45, 90, 135]
+        self.rays=[]
 
     def rotate(self, left=False, right=False) -> None:
         if left:
@@ -89,16 +91,21 @@ class Car:
         self.angle = 0
 
     def draw_radar(self, window: pygame.Surface, mask: pygame.Mask):
-        radar_angle = 90
-        max_length = 200
-        length = 0
-        center_x, center_y = self.get_center_position()
-        radar_x = int(center_x)
-        radar_y = int(center_y)
-        while mask.get_at((radar_x, radar_y)) ==0 and length < max_length:
-            length += 1
-            radar_x = center_x + length * math.cos(math.radians(self.angle + radar_angle))
-            radar_y = center_y - length * math.sin(math.radians(self.angle + radar_angle))
-        
-        pygame.draw.line(window, (255, 255, 255), (center_x, center_y), (radar_x, radar_y), 1)
-        pygame.draw.circle(window, (0,255,0), (radar_x, radar_y), 3)
+        for ray_angle in self.ray_angles:
+            max_length = self.img.get_width()*3
+            length = 0
+            center_x, center_y = self.get_center_position()
+            while length <= max_length:
+                radar_x = int(center_x + length * math.cos(math.radians(self.angle + ray_angle)))
+                radar_y = int(center_y - length * math.sin(math.radians(self.angle + ray_angle)))
+
+                # if radar_x < 0 or radar_y < 0 or mask.get_at((radar_x, radar_y)):
+                #     break
+                # if radar_x > window.get_width() or radar_y > window.get_height():
+                #     break
+                if mask.get_at((radar_x, radar_y)):
+                    break
+                length += 1
+                
+            pygame.draw.line(window, (255, 255, 255), (center_x, center_y), (radar_x, radar_y), 1)
+            pygame.draw.circle(window, (0,255,0), (radar_x, radar_y), 3)

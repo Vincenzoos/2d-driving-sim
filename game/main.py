@@ -5,7 +5,7 @@ import car
 
 pygame.init()
 
-# Get information about the display
+# Get inforamation about the display
 info = pygame.display.Info()
 screen_width = info.current_w
 screen_height = info.current_h
@@ -57,7 +57,8 @@ while run:
             break
 
     # key pressed
-    player_car.update_car_movement()    
+    player_car.update_car_movement()
+    
 
     # check for collision
     if player_car.collide(TRACK_BORDER_MASK):
