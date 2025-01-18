@@ -1,6 +1,7 @@
 import pygame
 from utils import scale_img
 import car
+import neat
 
 
 pygame.init()
@@ -43,39 +44,85 @@ def draw_objects(window: pygame.Surface, objects, car: car.Car):
     # Update the game each iteration
     pygame.display.update()
 
+def eliminate(index):
+    cars.pop(index)
+    ge.pop(index)
+    neural_nets.pop(index)
 
-while run:
-    # Limit clock to 60 fps, ensure all machine run the game on the same speed
-    clock.tick(FPS)
-    draw_objects(WINDOW, game_objects, player_car)
+def eval_genomes(genomes, config):
+    global cars, ge, neural_nets
+    cars = []
+    ge = []
+    neural_nets = []
+    THRESHOLD = 0.7
 
-    # Event check
-    for event in pygame.event.get():
-        # Stop the game if game window exit button was clicked
-        if event.type == pygame.QUIT:
-            run = False
+    # for each generation, update cars, genome and neural nets lists
+    for genome_id, genome in genomes:
+        cars.append(car.Car())
+        ge.append(genome)
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        neural_nets.append(net)
+
+        # Set initial fitness of each car in each generation to zero
+        genome.fitness = 0
+
+    while run:
+        # Limit clock to 60 fps, ensure all machine run the game on the same speed
+        clock.tick(FPS)
+        draw_objects(WINDOW, game_objects, player_car)
+
+        # Event check
+        for event in pygame.event.get():
+            # Stop the game if game window exit button was clicked
+            if event.type == pygame.QUIT:
+                run = False
+                break
+
+        # Stop the game if all cars in one generation are destroyed
+        if len(cars) == 0:
             break
 
-    # key pressed
-    player_car.update_car_movement()
-    
+        # Update fitness point of each car, enliminate it from the game
+        for i, car in enumerate(cars):
+            ge[i].fitness += 1
+            if not car.sprite.alive:
+                eliminate(i)
 
-    # check for collision
-    if player_car.collide(TRACK_BORDER_MASK):
-        player_car.bounce()
-    
-    finish_line_poi = player_car.collide(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
-    if finish_line_poi:
-        if finish_line_poi[1] == 0:
+        # Activate Steering action in autopilot mode for each car
+        for i, car in enumerate(cars):
+            output = neural_nets.activate(car.get_data())
+            if output[0] > THRESHOLD:
+                car.rotate(left=True)
+            if output[1] > THRESHOLD:
+                car.rotate(right=True)
+            if output[0] <= THRESHOLD and output[1] <= THRESHOLD:
+                car.rotate()
+
+        # Update the state of car in autopilot mode for each car
+        for car in cars:
+            car.draw(WINDOW)
+            car.update_autopilot()
+
+        # Detect human control via key pressed
+        # player_car.update_mannual()
+        
+        
+
+        # check for collision
+        if player_car.collide(TRACK_BORDER_MASK):
             player_car.bounce()
-        else:
-            print("You win!")
-            player_car.reset_position()
+        
+        finish_line_poi = player_car.collide(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
+        if finish_line_poi:
+            if finish_line_poi[1] == 0:
+                player_car.bounce()
+            else:
+                print("You win!")
+                player_car.reset_position()
 
-    # draw radar
-    player_car.draw_radar(WINDOW, TRACK_BORDER_MASK)
+        # draw radar
+        player_car.draw_radar(WINDOW, TRACK_BORDER_MASK)
+        pygame.display.update()
 
-    pygame.display.update()
-
-# Game termination
-pygame.quit()
+    # Game termination
+    pygame.quit()
