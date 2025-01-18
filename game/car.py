@@ -2,6 +2,8 @@ import pygame
 import math
 from utils import blit_rotate_center
 # 
+# TODO: create 2 abstract (mannual_car and autopilot_car) from Car
+# TODO: keep shared attributes in abstract, implement differences in two subclasses  
 class Car:
     # 
     def __init__(self, img: pygame.Surface, max_vel: int, rotation_vel: int, x: int, y: int) -> None:
