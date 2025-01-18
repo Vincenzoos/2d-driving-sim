@@ -14,8 +14,8 @@ class Car:
         self.y = y
         self.acceleration = 0.1
         self.friction = 0.1
-        self.ray_angles = [-135, -45, 45, 90, 135]
-        self.rays=[]
+        self.radar_angles = [-135, -45, 45, 90, 135]
+        self.radars=[]
 
     def rotate(self, left=False, right=False) -> None:
         if left:
@@ -57,7 +57,8 @@ class Car:
             self.vel += self.friction
         self.move()
     
-    def update_car_movement(self):
+    def update_mannual(self):
+        # Human control mode
         moved = False
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -73,6 +74,13 @@ class Car:
 
         if not moved:
             self.decceleration()
+        
+    def update_autopilot(self):
+        # Self driving mode
+        self.radars.clear()
+        self.move_foward()
+        self.get_radar_data()
+
         
     def bounce(self):
         self.vel = - self.vel/1.5
@@ -91,14 +99,13 @@ class Car:
         self.angle = 0
 
     def draw_radar(self, window: pygame.Surface, mask: pygame.Mask):
-        for ray_angle in self.ray_angles:
+        for ray_angle in self.radar_angles:
             max_length = self.img.get_width()*3
             length = 0
             center_x, center_y = self.get_center_position()
             while length <= max_length:
                 radar_x = int(center_x + length * math.cos(math.radians(self.angle + ray_angle)))
                 radar_y = int(center_y - length * math.sin(math.radians(self.angle + ray_angle)))
-
                 # if radar_x < 0 or radar_y < 0 or mask.get_at((radar_x, radar_y)):
                 #     break
                 # if radar_x > window.get_width() or radar_y > window.get_height():
@@ -106,6 +113,20 @@ class Car:
                 if mask.get_at((radar_x, radar_y)):
                     break
                 length += 1
-                
+            
+            # Draw the radar
             pygame.draw.line(window, (255, 255, 255), (center_x, center_y), (radar_x, radar_y), 1)
             pygame.draw.circle(window, (0,255,0), (radar_x, radar_y), 3)
+
+            # Calculate distance between the center of the car and the tip of the radar's ray for each radar
+            dist = int(math.sqrt((radar_x - center_x)**2 + (radar_y - center_y)**2))
+
+            # Append the dist and angle info of each radar to radars list of the car 
+            self.radars.append((ray_angle, dist))
+
+    def get_radar_data(self):
+        # return list pf dist from car center to tip of radar's ray for each data as inputs for AI agent
+        return [radar_data[1] for radar_data in self.radars]
+
+    
+   
