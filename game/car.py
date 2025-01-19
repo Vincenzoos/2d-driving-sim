@@ -1,23 +1,24 @@
 import pygame
 import math
-from utils import blit_rotate_center
+from utils import blit_rotate_center, scale_img
 # 
-# TODO: create 2 abstract (mannual_car and autopilot_car) from Car
-# TODO: keep shared attributes in abstract, implement differences in two subclasses  
+RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.55)
+GREEN_CAR = scale_img(pygame.image.load("imgs/green-car.png"), 0.55)
+
 class Car:
     # 
     def __init__(self, img: pygame.Surface, max_vel: int, rotation_vel: int, x: int, y: int) -> None:
         self.img = img
         self.max_vel = max_vel
         self.rotation_vel = rotation_vel
-        self.vel = 0
-        self.angle = 0
         self.x = x
         self.y = y
+        self.vel = 0
+        self.angle = 0
         self.acceleration = 0.1
         self.friction = 0.1
-        self.radar_angles = [-135, -45, 45, 90, 135]
-        self.radars=[]
+        self.alive = True
+        
 
     def rotate(self, left=False, right=False) -> None:
         if left:
@@ -58,8 +59,36 @@ class Car:
         if self.vel < 0:
             self.vel += self.friction
         self.move()
+      
+    def bounce(self):
+        self.vel = - self.vel/1.5
+        self.move()
+
+    def collide(self, mask: pygame.Mask, x=0, y=0):
+        car_mask = pygame.mask.from_surface(self.img)
+        offset = (int(self.x - x), int(self.y - y))
+        intersection_point = mask.overlap(car_mask, offset)
+        return intersection_point
     
-    def update_mannual(self):
+    def update_car_status(self, is_alive: bool):
+        self.alive = is_alive
+        print("car is dead")
+
+    def is_alive(self):
+       return self.alive
+    
+    def reset_position(self):
+        self.x = 150
+        self.y = 150
+        self.vel = 0
+        self.angle = 0
+
+    
+class mannualCar(Car):
+    def __init__(self):
+        super().__init__(RED_CAR, 5, 5, 150, 250)
+    
+    def mannual_drive(self):
         # Human control mode
         moved = False
         keys = pygame.key.get_pressed()
@@ -76,29 +105,20 @@ class Car:
 
         if not moved:
             self.decceleration()
-        
-    def update_autopilot(self):
+
+    
+
+class autonomousCar(Car):
+    def __init__(self):
+        super().__init__(GREEN_CAR, 5, 5, 140, 250)
+        self.radar_angles = [-135, -45, 45, 90, 135]
+        self.radars=[]
+
+    def autonomous_drive(self):
         # Self driving mode
         self.radars.clear()
         self.move_foward()
         self.get_radar_data()
-
-        
-    def bounce(self):
-        self.vel = - self.vel/1.5
-        self.move()
-
-    def collide(self, mask: pygame.Mask, x=0, y=0):
-        car_mask = pygame.mask.from_surface(self.img)
-        offset = (int(self.x - x), int(self.y - y))
-        intersection_point = mask.overlap(car_mask, offset)
-        return intersection_point
-    
-    def reset_position(self):
-        self.x = 150
-        self.y = 150
-        self.vel = 0
-        self.angle = 0
 
     def draw_radar(self, window: pygame.Surface, mask: pygame.Mask):
         for ray_angle in self.radar_angles:
@@ -108,10 +128,6 @@ class Car:
             while length <= max_length:
                 radar_x = int(center_x + length * math.cos(math.radians(self.angle + ray_angle)))
                 radar_y = int(center_y - length * math.sin(math.radians(self.angle + ray_angle)))
-                # if radar_x < 0 or radar_y < 0 or mask.get_at((radar_x, radar_y)):
-                #     break
-                # if radar_x > window.get_width() or radar_y > window.get_height():
-                #     break
                 if mask.get_at((radar_x, radar_y)):
                     break
                 length += 1
@@ -129,6 +145,3 @@ class Car:
     def get_radar_data(self):
         # return list pf dist from car center to tip of radar's ray for each data as inputs for AI agent
         return [radar_data[1] for radar_data in self.radars]
-
-    
-   
