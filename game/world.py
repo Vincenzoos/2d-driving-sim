@@ -1,33 +1,10 @@
 import pygame
-from utils import scale_img
-import car
 from car import mannualCar, autonomousCar
 import neat
+from asset import *
 
 
 pygame.init()
-
-# Get inforamation about the display
-info = pygame.display.Info()
-screen_width = info.current_w
-screen_height = info.current_h
-
-# Game Assets loading
-GRASS = scale_img(pygame.image.load("imgs/grass.jpg"), 2.5)
-TRACK = scale_img(pygame.image.load("imgs/track.png"), 0.75)
-TRACK_BORDER = scale_img(pygame.image.load("imgs/track-border.png"), 0.75)
-TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
-FINISH_LINE = scale_img(pygame.image.load("imgs/finish.png"),0.8)
-FINISH_LINE_POSITION = (110, 200)
-FINISH_LINE_MASK = pygame.mask.from_surface(FINISH_LINE)
-RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.55)
-GREEN_CAR = pygame.image.load("imgs/green-car.png")
-
-# Game Window(surface) initialization
-WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Driving Sim")
-
 
 # Game config
 FPS = 60
@@ -35,7 +12,6 @@ clock = pygame.time.Clock()
 game_objects = [(GRASS, (0,0)), (TRACK, (0,0)), (FINISH_LINE, FINISH_LINE_POSITION), (TRACK_BORDER, (0,0))]
 player_car = mannualCar()
 ai_car = autonomousCar()
-
 
 
 def draw_objects(window: pygame.Surface, objects):
@@ -62,7 +38,7 @@ def eval_genomes(genomes, config):
 
     # for each generation, update cars, genome and neural nets lists
     for genome_id, genome in genomes:
-        cars.append(car.Car())
+        cars.append(autonomousCar())
         ge.append(genome)
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         neural_nets.append(net)
@@ -94,7 +70,7 @@ def eval_genomes(genomes, config):
 
         # Activate Steering action in autopilot mode for each car
         for i, car in enumerate(cars):
-            output = neural_nets.activate(car.get_data())
+            output = neural_nets[i].activate(car.get_radar_data())
             if output[0] > THRESHOLD:
                 car.rotate(left=True)
             if output[1] > THRESHOLD:
@@ -104,18 +80,20 @@ def eval_genomes(genomes, config):
 
         # Update the state of car in autopilot mode for each car
         for car in cars:
-            car.draw(WINDOW)
+            car.draw()
             car.autonomous_drive()
+        
+
 
         # Detect human control via key pressed
         # player_car.mannual_drive() 
 
         # check for collision
-        # if player_car.collide(TRACK_BORDER_MASK):
+        # if player_car.check_collision(TRACK_BORDER_MASK):
         #     player_car.bounce()
         #     player_car.update_car_status(False)
         
-        # finish_line_poi = player_car.collide(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
+        # finish_line_poi = player_car.check_collision_point(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
         # if finish_line_poi:
         #     if finish_line_poi[1] == 0:
         #         player_car.bounce()
@@ -128,4 +106,4 @@ def eval_genomes(genomes, config):
         pygame.display.update()
 
     # Game termination
-    pygame.quit()
+    # pygame.quit()
