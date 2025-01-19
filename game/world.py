@@ -26,7 +26,6 @@ def eliminate(index):
     ge.pop(index)
     neural_nets.pop(index)
 
-# def eval_genomes():
 def eval_genomes(genomes, config):
     # Game loop
     run = True
