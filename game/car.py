@@ -1,9 +1,8 @@
 import pygame
 import math
-from utils import blit_rotate_center, scale_img
+from utils import blit_rotate_center
+from asset import *
 # 
-RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.55)
-GREEN_CAR = scale_img(pygame.image.load("imgs/green-car.png"), 0.55)
 
 class Car:
     # 
@@ -50,8 +49,8 @@ class Car:
         self.x -= horizontal_displacement
         self.y -= vertical_displacement
 
-    def draw(self, window: pygame.Surface):
-        blit_rotate_center(window, self.img, (self.x, self.y), self.angle)
+    def draw(self):
+        blit_rotate_center(WINDOW, self.img, (self.x, self.y), self.angle)
 
     def decceleration(self):
         if self.vel > 0:
@@ -64,11 +63,13 @@ class Car:
         self.vel = - self.vel/1.5
         self.move()
 
-    def collide(self, mask: pygame.Mask, x=0, y=0):
+    def check_collision(self, mask: pygame.Mask, x=0, y=0):
         car_mask = pygame.mask.from_surface(self.img)
         offset = (int(self.x - x), int(self.y - y))
         intersection_point = mask.overlap(car_mask, offset)
-        return intersection_point
+        if intersection_point:
+            self.alive = False
+        
     
     def update_car_status(self, is_alive: bool):
         self.alive = is_alive
@@ -118,9 +119,12 @@ class autonomousCar(Car):
         # Self driving mode
         self.radars.clear()
         self.move_foward()
+        self.rotate()
+        self.draw_radar(WINDOW, TRACK_BORDER_MASK)
+        self.check_collision(TRACK_BORDER_MASK)
         self.get_radar_data()
 
-    def draw_radar(self, window: pygame.Surface, mask: pygame.Mask):
+    def draw_radar(self, window: pygame.Surface, mask: pygame.mask):
         for ray_angle in self.radar_angles:
             max_length = self.img.get_width()*3
             length = 0
@@ -144,4 +148,7 @@ class autonomousCar(Car):
 
     def get_radar_data(self):
         # return list pf dist from car center to tip of radar's ray for each data as inputs for AI agent
-        return [radar_data[1] for radar_data in self.radars]
+        inputs = [0, 0, 0, 0, 0]
+        for i, radar in enumerate(self.radars):
+            inputs[i] = int(radar[1])
+        return inputs
