@@ -36,8 +36,8 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
 
-    # Run the fitness function for 50 generations
-    pop.run(eval_genomes, 50)
+    # Run the fitness function for 100 generations
+    pop.run(eval_genomes, 100)
 
 if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)

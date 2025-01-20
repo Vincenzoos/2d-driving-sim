@@ -92,7 +92,7 @@ def eval_genomes(genomes: list, config: neat.Config):
         for event in pygame.event.get():
             # Stop the game if game window exit button was clicked
             if event.type == pygame.QUIT:
-                run = False
+                pygame.quit()
                 break
 
         # Exit loop if all cars are eliminated
