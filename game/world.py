@@ -41,7 +41,6 @@ def draw_objects(window: pygame.Surface, objects: list):
     """
     for obj, pos in objects:
         window.blit(obj, pos)
-    # car.draw(window)
     # Update the game each iteration
     pygame.display.update()
 
@@ -68,9 +67,6 @@ def displayTexts():
     WINDOW.blit(no_gen_txt, (5, 630))
 
 def run_mannual():
-    # Game environment intialization
-    pygame.init()
-
     # Flag for the main simulation loop
     run = True
     while run:
@@ -78,6 +74,7 @@ def run_mannual():
         clock.tick(FPS)
         draw_objects(WINDOW, game_objects)
         player_car.draw()
+        pygame.display.update()
 
         # Event check
         for event in pygame.event.get():
@@ -101,7 +98,6 @@ def run_mannual():
                 print("You win!")
                 player_car.reset_position()
 
-    pygame.display.update()
     # Game termination
     pygame.quit()
 
@@ -174,31 +170,7 @@ def eval_genomes(genomes: list, config: neat.Config):
         for car in cars:
             car.draw()
             car.autonomous_drive()
-        
-
-
-        # Detect human control via key pressed
-        # player_car.mannual_drive() 
-
-        # check for collision
-        # if player_car.check_collision(TRACK_BORDER_MASK):
-        #     player_car.bounce()
-        #     player_car.update_car_status(False)
-        
-        # finish_line_poi = player_car.check_collision_point(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
-        # if finish_line_poi:
-        #     if finish_line_poi[1] == 0:
-        #         player_car.bounce()
-        #     else:
-        #         print("You win!")
-        #         player_car.reset_position()
-
-        # draw radar
-        # player_car.draw_radar(WINDOW, TRACK_BORDER_MASK)
 
         # Update the game display
         displayTexts()
         pygame.display.update()
-
-    # Game termination
-    # pygame.quit()

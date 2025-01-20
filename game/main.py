@@ -4,9 +4,6 @@ from asset import *
 import neat
 import os
 
-# Initialize Pygame
-pygame.init()
-
 # Constants for the menu
 MENU_WIDTH, MENU_HEIGHT = 800, 600
 MENU_BG_COLOR = (0, 0, 0)

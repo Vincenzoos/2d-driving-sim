@@ -109,9 +109,9 @@ class Car:
         self.vel = - self.vel/1.5
         self.move()
 
-    def check_collision(self, mask: pygame.Mask, x=0, y=0):
+    def check_collision(self, mask: pygame.Mask, x=0, y=0) -> tuple:
         """
-        Checks for collision with another object represented by a mask.
+        Checks for collision with another object represented by a mask, return collision point of there is one, otherwise return None.
 
         Args:
             mask (pygame.Mask): The mask to check collision against.
@@ -121,8 +121,10 @@ class Car:
         car_mask = pygame.mask.from_surface(self.img)
         offset = (int(self.x - x), int(self.y - y))
         intersection_point = mask.overlap(car_mask, offset)
+        # if collision detected, set car alive status to False
         if intersection_point:
             self.alive = False
+        return intersection_point
         
     
     def update_car_status(self, is_alive: bool):
