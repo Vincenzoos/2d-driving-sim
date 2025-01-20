@@ -19,7 +19,7 @@ clock = pygame.time.Clock()
 game_objects = [
     (GRASS, (0,0)), 
     (TRACK, (0,0)), 
-    (FINISH_LINE, (110, 200)), 
+    (FINISH_LINE, FINISH_LINE_POSITION), 
     (TRACK_BORDER, (0,0))
 ]
 # Human-controlled car
@@ -57,6 +57,54 @@ def eliminate(index: int):
     ge.pop(index)
     neural_nets.pop(index)
 
+def displayTexts():
+    """
+    Display essentials simulation info such as the current number of cars on screen and the current number of generation of the cars
+    """
+    no_cars_txt = MAIN_FONT.render(f'Cars Alive:  {str(len(cars))}', True, (255, 255, 255))
+    no_gen_txt = MAIN_FONT.render(f'Generation:  {str(generation)}', True, (255, 255, 255))
+
+    WINDOW.blit(no_cars_txt, (5, 600))
+    WINDOW.blit(no_gen_txt, (5, 630))
+
+def run_mannual():
+    # Game environment intialization
+    pygame.init()
+
+    # Flag for the main simulation loop
+    run = True
+    while run:
+        # Limit clock to 60 fps, ensure all machine run the game on the same speed
+        clock.tick(FPS)
+        draw_objects(WINDOW, game_objects)
+        player_car.draw()
+
+        # Event check
+        for event in pygame.event.get():
+            # Stop the game if game window exit button was clicked
+            if event.type == pygame.QUIT:
+                run = False
+                break
+
+        # key pressed
+        player_car.mannual_drive()
+
+        # check for collision
+        if player_car.check_collision(TRACK_BORDER_MASK):
+            player_car.bounce()
+        
+        finish_line_poi = player_car.check_collision(FINISH_LINE_MASK, *FINISH_LINE_POSITION)
+        if finish_line_poi:
+            if finish_line_poi[1] == 0:
+                player_car.bounce()
+            else:
+                print("You win!")
+                player_car.reset_position()
+
+    pygame.display.update()
+    # Game termination
+    pygame.quit()
+
 
 def eval_genomes(genomes: list, config: neat.Config):
     """
@@ -86,14 +134,6 @@ def eval_genomes(genomes: list, config: neat.Config):
 
         # Set initial fitness of each genome to zero
         genome.fitness = 0
-
-    def displayTexts():
-        no_cars_txt = MAIN_FONT.render(f'Cars Alive:  {str(len(cars))}', True, (255, 255, 255))
-        no_gen_txt = MAIN_FONT.render(f'Generation:  {str(generation)}', True, (255, 255, 255))
-
-        WINDOW.blit(no_cars_txt, (0, 600))
-        WINDOW.blit(no_gen_txt, (0, 630))
-        pygame.display.update()
 
     # Flag for the main simulation loop
     run = True
