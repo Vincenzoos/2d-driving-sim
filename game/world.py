@@ -9,6 +9,10 @@ pygame.init()
 # Game Configuration
 # Frames per second for the game loop
 FPS = 60
+
+# Game menu main font
+MAIN_FONT = pygame.font.Font('freesansbold.ttf', 20)
+
 # Clock to control the game loop speed
 clock = pygame.time.Clock()
 # List of game objects and their positions
@@ -22,6 +26,8 @@ game_objects = [
 player_car = mannualCar()
 # AI-controlled car
 ai_car = autonomousCar()
+
+generation = 1
 
 
 def draw_objects(window: pygame.Surface, objects: list):
@@ -61,7 +67,7 @@ def eval_genomes(genomes: list, config: neat.Config):
         config (neat.Config): The NEAT configuration object.
     """
     # Initialize global variables for cars, genomes, and neural networks
-    global cars, ge, neural_nets
+    global cars, ge, neural_nets, generation
      # List of AI-controlled cars
     cars = []
     # List of genomes corresponding to each car
@@ -81,6 +87,14 @@ def eval_genomes(genomes: list, config: neat.Config):
         # Set initial fitness of each genome to zero
         genome.fitness = 0
 
+    def displayTexts():
+        no_cars_txt = MAIN_FONT.render(f'Cars Alive:  {str(len(cars))}', True, (255, 255, 255))
+        no_gen_txt = MAIN_FONT.render(f'Generation:  {str(generation)}', True, (255, 255, 255))
+
+        WINDOW.blit(no_cars_txt, (0, 600))
+        WINDOW.blit(no_gen_txt, (0, 630))
+        pygame.display.update()
+
     # Flag for the main simulation loop
     run = True
     while run:
@@ -97,6 +111,7 @@ def eval_genomes(genomes: list, config: neat.Config):
 
         # Exit loop if all cars are eliminated
         if len(cars) == 0:
+            generation += 1
             break
 
         # Update fitness and eliminate cars that are no longer alive
@@ -141,7 +156,8 @@ def eval_genomes(genomes: list, config: neat.Config):
         # draw radar
         # player_car.draw_radar(WINDOW, TRACK_BORDER_MASK)
 
-         # Update the game display
+        # Update the game display
+        displayTexts()
         pygame.display.update()
 
     # Game termination
