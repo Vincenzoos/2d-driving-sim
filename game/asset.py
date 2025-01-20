@@ -9,9 +9,6 @@ FINISH_LINE = scale_img(pygame.image.load("imgs/finish.png"),0.8)
 RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.55)
 GREEN_CAR = scale_img(pygame.image.load("imgs/green-car.png"), 0.55)
 
-# Coordinates for the finish line placement
-FINISH_LINE_POSITION = (110, 200)
-
 # Mask for collision detection with track border
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 
