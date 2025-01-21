@@ -219,7 +219,6 @@ class autonomousCar(Car):
         """
         super().__init__(GREEN_CAR, 5, 5, 140, 250)
         self.radar_angles = [30, 60, 90, 120, 150]
-        # self.radar_angles = [50, 70, 90, 110, 130]
         self.radars=[]
 
     def autonomous_drive(self):

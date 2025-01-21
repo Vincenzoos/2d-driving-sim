@@ -54,6 +54,19 @@ Design and implement an AI system capable of navigating a predefined track witho
 - **How?**  
    NEAT was integrated to train neural networks that control the car's actions, learning from trial and error to optimize navigation and avoid collisions.  
 
+#### 5. Adjust sensor angle to focus on the front of the car  
+- **Why?**  
+   In this simulation, the car only fails when it collides with obstacles at the front. Rear or side collisions are irrelevant, so focusing on front-facing sensors improves decision-making and reduces training time. 
+- **How?**  
+   The sensor angles are evenly distributed over a 30-degree range, starting from the car's forward orientation (90 degrees). The angles are set as [30°, 60°, 90°, 120°, 150°].
+
+#### 6. Resize car and track proportionally
+- **Why?**  
+   The current track was too small relative to the car, and some collision detection bugs caused the car to collide visually closer than expected. Scaling the car down and the track up reduces collision frequency, allowing the car to complete the track in fewer iterations.
+- **How?**  
+   The track is scaled to 0.8 of its original size (up from 0.75).
+   The car is scaled to 0.45 of its original size (down from 0.55).
+
 ---
 
 ## How to Run the Simulation  
