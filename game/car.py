@@ -218,7 +218,8 @@ class autonomousCar(Car):
             radars (list[tuple]): Stores radar data as (angle, distance) tuples.
         """
         super().__init__(GREEN_CAR, 5, 5, 140, 250)
-        self.radar_angles = [-135, -45, 45, 90, 135]
+        self.radar_angles = [30, 60, 90, 120, 150]
+        # self.radar_angles = [50, 70, 90, 110, 130]
         self.radars=[]
 
     def autonomous_drive(self):
@@ -247,7 +248,7 @@ class autonomousCar(Car):
         """
         # for each radar sensor, increment its range until either reaches max length or detect an obstacle
         for ray_angle in self.radar_angles:
-            max_length = self.img.get_width()*3
+            max_length = self.img.get_width()*7
             length = 0
             center_x, center_y = self.get_center_position()
             while length <= max_length:

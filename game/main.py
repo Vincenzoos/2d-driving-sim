@@ -95,7 +95,7 @@ def run_neat(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
 
-    pop.run(eval_genomes, 150)
+    pop.run(eval_genomes, 50)
 
 if __name__ == "__main__":
     selected_mode = menu_loop()
