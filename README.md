@@ -84,6 +84,11 @@ Design and implement an AI system capable of navigating a predefined track witho
       
 ---
 
+## Demo Run Video
+   ![Demo Video](docs/driving_sim_demo.mp4)
+
+---
+
 ## Technologies Used
 - Python: Programming language for the simulation.
 - Pygame: For rendering the 2D environment and handling inputs.
