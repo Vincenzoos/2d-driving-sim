@@ -86,7 +86,7 @@ Design and implement an AI system capable of navigating a predefined track witho
 
 ## Demo Run Video
    ![Demo Video](docs/driving_sim_demo.mp4)
-
+   ![Demo Screenshot](docs/driving_sim_demo.png)
 ---
 
 ## Technologies Used
